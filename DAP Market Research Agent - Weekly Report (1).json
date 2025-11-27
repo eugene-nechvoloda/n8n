@@ -1,0 +1,1453 @@
+{
+  "name": "DAP Market Research Agent - Weekly Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "178dcd9b-bd81-43db-b00c-8131e00e30af",
+      "name": "01. Trigger - Weekly Monday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -16
+      ],
+      "tags": [
+        "stage:1",
+        "type:trigger",
+        "owner:agent",
+        "env:prod"
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "date_start",
+              "name": "date_start",
+              "value": "={{ $today.minus({days: 7}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "date_end",
+              "name": "date_end",
+              "value": "={{ $today.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "accepted_competitors",
+              "name": "accepted_competitors",
+              "value": "[\"WalkMe\", \"WhatFix\", \"Pendo\", \"Apty\"]",
+              "type": "string"
+            },
+            {
+              "id": "research_depth",
+              "name": "research_depth_initial",
+              "value": 0.6,
+              "type": "number"
+            },
+            {
+              "id": "8e2c4b9d-63c3-495b-9fb7-f0ccd5b76a7d",
+              "name": "research_depth_subsequent",
+              "value": "0.4",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa2e8235-421d-4a17-83a6-f2823bca92d5",
+      "name": "02. Set Variables - Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -704,
+        -16
+      ],
+      "tags": [
+        "stage:2",
+        "type:transform",
+        "owner:agent",
+        "env:prod"
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "competitor_urls",
+              "name": "competitor_urls",
+              "value": "[{\"company\": \"WhatFix\", \"url\": \"https://whatfix.com/newsroom/press-releases/\", \"type\": \"newsroom\"},                {\"company\": \"Apty\", \"url\": \"https://apty.ai/newsroom/\", \"type\": \"newsroom\"},{\"company\": \"WhatFix\", \"url\": \"https://whatfix.com/newsroom/announcements/\", \"type\": \"newsroom\"},{\"company\": \"WhatFix\", \"url\": \"https://whatfix.com/newsroom/news/\", \"type\": \"newsroom\"},{\"company\": \"WhatFix\", \"url\": \"https://whatfix.com/resources/analyst-reports/\", \"type\": \"newsroom\"},{\"company\": \"Walkme\", \"url\": \"https://walkme.com/news/\", \"type\": \"newsroom\"},{\"company\": \"Pendo\", \"url\": \"https://www.pendo.io/new/\", \"type\": \"newsroom\"}]",
+              "type": "array"
+            },
+            {
+              "id": "industry_urls",
+              "name": "industry_urls",
+              "value": "[{\"source\": \"Forrester\", \"url\": \"https://www.forrester.com/allSearch?query=digital%20adoption%20platform&activeTab=blogs&sortOrder=desc&publishedSinceInDays=30&sortType=relevance&accessOnly=false&isFuzzyNeeded=true\", \"type\": \"industry_report\"}, {\"source\": \"TechCrunch\", \"url\": \"https://techcrunch.com/?s=digital+adoption+platforms\", \"type\": \"industry_report\"}, {\"source\": \"VentureBeat\", \"url\": \"https://venturebeat.com/search/digital%20adoption%20platform\", \"type\": \"industry_report\"}, {\"source\": \"eLearning Industry\", \"url\": \"https://elearningindustry.com/mastering-learning-in-the-flow-of-work-with-digital-adoption-platforms\", \"type\": \"industry_report\"}]",
+              "type": "array"
+            },
+            {
+              "id": "review_urls",
+              "name": "review_urls",
+              "value": "[{\"company\": \"WalkMe\", \"url\": \"https://www.g2.com/products/walkme/reviews?qs=pros-and-cons\", \"platform\": \"G2\", \"type\": \"user_reviews\"}, {\"company\": \"WhatFix\", \"url\": \"https://www.g2.com/products/whatfix/reviews?qs=pros-and-cons\", \"platform\": \"G2\", \"type\": \"user_reviews\"}, {\"company\": \"Pendo\", \"url\": \"https://www.g2.com/products/pendo-io-pendo/reviews?qs=pros-and-cons\", \"platform\": \"G2\", \"type\": \"user_reviews\"}, {\"company\": \"Apty\", \"url\": \"https://www.g2.com/products/apty/reviews?qs=pros-and-cons\", \"platform\": \"G2\", \"type\": \"user_reviews\"}, {\"company\": \"WalkMe\", \"url\": \"https://www.gartner.com/reviews/market/digital-adoption-platforms/vendor/walkme/product/walkme-digital-adoption-platform/reviews\", \"platform\": \"Gartner\", \"type\": \"user_reviews\"},{\"company\": \"WhatFix\", \"url\": \"https://www.gartner.com/reviews/market/digital-adoption-platforms/vendor/whatfix/product/whatfix-digital-adoption-platform/reviews\", \"platform\": \"Gartner\", \"type\": \"user_reviews\"},                 {\"company\": \"Pendo\", \"url\": \"https://www.gartner.com/reviews/market/digital-adoption-platforms/vendor/pendo/product/pendo/reviews\", \"platform\": \"Gartner\", \"type\": \"user_reviews\"}, {\"company\": \"Apty\", \"url\": \"https://www.gartner.com/reviews/market/digital-adoption-platforms/vendor/apty/product/apty/reviews\", \"platform\": \"Gartner\", \"type\": \"user_reviews\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e17a0c41-e41d-4814-bc1d-c349ea423cbe",
+      "name": "03. Set URLs - Data Sources",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        -16
+      ],
+      "tags": [
+        "stage:3",
+        "type:transform",
+        "owner:agent",
+        "env:prod"
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Code Node: Data Processing, Cleaning & Deduplication\n * Purpose: 1) Deduplicate by URL, 2) Clean HTML/raw data, 3) Categorize using URL metadata\n * Inputs: Merged HTTP responses from competitor/review/industry URLs + Perplexity data\n * Outputs: Clean, categorized, deduplicated data ready for AI analysis\n */\nfunction extractStringsAndLinks(obj, result = { texts: [], links: [] }) {\n  if (typeof obj === 'string') {\n    const urlPattern = /^https?:\\/\\/[^\\s]+$/i;\n    if (urlPattern.test(obj.trim())) {\n      result.links.push(obj.trim());\n    } else {\n      result.texts.push(obj);\n    }\n    return result;\n  }\n  if (typeof obj !== 'object' || obj === null) return result;\n  for (const key in obj) {\n    if (!obj.hasOwnProperty(key)) continue;\n    extractStringsAndLinks(obj[key], result);\n  }\n  return result;\n}\n\nconst items = $input.all();\n\ntry {\n  const seen = new Set();\n  const processedData = [];\n  \n  // HTML cleaning function - removes tags, scripts, cleans content\n  function cleanHtmlContent(rawContent) {\n    if (!rawContent || typeof rawContent !== 'string') return '';\n    \n    let cleaned = rawContent\n      // Remove problematic elements completely\n      .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '')\n      .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, '')\n      .replace(/<nav\\b[^<]*(?:(?!<\\/nav>)<[^<]*)*<\\/nav>/gi, '')\n      .replace(/<header\\b[^<]*(?:(?!<\\/header>)<[^<]*)*<\\/header>/gi, '')\n      .replace(/<footer\\b[^<]*(?:(?!<\\/footer>)<[^<]*)*<\\/footer>/gi, '')\n      .replace(/<aside\\b[^<]*(?:(?!<\\/aside>)<[^<]*)*<\\/aside>/gi, '')\n      \n      // Remove all HTML tags but keep content\n      .replace(/<[^>]*>/g, ' ')\n      \n      // Clean up HTML entities and special characters\n      .replace(/&nbsp;/g, ' ')\n      .replace(/&amp;/g, '&')\n      .replace(/&lt;/g, '<')\n      .replace(/&gt;/g, '>')\n      .replace(/&quot;/g, '\"')\n      .replace(/&#\\d+;/g, ' ')\n      .replace(/&[a-zA-Z]+;/g, ' ')\n      \n      // Clean up excessive whitespace\n      .replace(/\\s+/g, ' ')\n      .replace(/\\n\\s*\\n/g, '\\n')\n      .replace(/\\t+/g, ' ')\n      .trim();\n    \n    // Filter out common navigation/footer text\n    const filterPatterns = [\n      /^(home|about|contact|privacy|terms|cookies|login|register|search)/i,\n      /^(skip to|jump to|go to)/i,\n      /^(copyright|©|\\(c\\))/i,\n      /^(menu|navigation|breadcrumb)/i\n    ];\n    \n    const lines = cleaned.split('\\n');\n    const filteredLines = lines.filter(line => {\n      const trimmed = line.trim();\n      if (trimmed.length < 10) return false;\n      return !filterPatterns.some(pattern => pattern.test(trimmed));\n    });\n    \n    cleaned = filteredLines.join('\\n').trim();\n    \n    // Limit content length for AI processing (max ~6000 chars per item)\n    if (cleaned.length > 6000) {\n      cleaned = cleaned.substring(0, 6000) + '... [content truncated for AI processing]';\n    }\n    \n    return cleaned;\n  }\n  \n  // Extract meaningful title from content or URL\n  // 🔧 FIXED: Removed broken function structure\n  function extractTitle(content, url, result, originalMetadata = {}) {\n    // Use metadata if available\n    if (originalMetadata.company && originalMetadata.type) {\n      return `${originalMetadata.company} - ${originalMetadata.type}`;\n    }\n    \n    // Early return if no content\n    if (!content || content.length < 10) return 'No content available';\n    \n    // Look for title patterns in cleaned content\n    const titleMatch = content.match(/^(.{15,120}?)[\\.\\!\\?\\n]/);\n    if (titleMatch) {\n      return titleMatch[1].trim();\n    }\n    \n    // Fallback to first meaningful sentence\n    const firstSentence = content.split('\\n')[0] || content.substring(0, 100);\n    return firstSentence.length > 10 ? firstSentence : 'Content extract';\n  }\n  \n  // Enhanced categorization using your URL metadata\n  function categorizeContent(url, content, originalMetadata = {}) {\n    const urlLower = url.toLowerCase();\n    \n    let category = 'general';\n    let company = $input.first().json.company || null;\n    let sourceType = $input.first().json.type || 'web';\n    let platform = $input.first().json.platform || null;\n    let confidence = 'medium';\n    \n    // Use original metadata for primary categorization\n    if (originalMetadata.type === 'newsroom') {\n      category = 'competitor_news';\n      confidence = 'high';\n      sourceType = 'newsroom';\n    } else if (originalMetadata.type === 'user_reviews') {\n      category = 'reviews';\n      confidence = 'high';\n      sourceType = 'review_platform';\n    } else if (originalMetadata.type === 'industry_report') {\n      category = 'industry_reports';\n      confidence = 'high';\n      sourceType = 'industry_publication';\n    }\n    \n    // Enhance with URL analysis for better categorization\n    if (urlLower.includes('whatfix.com')) {\n      company = company || 'WhatFix';\n      if (category === 'general') category = 'competitor_news';\n    } else if (urlLower.includes('apty.ai')) {\n      company = company || 'Apty';\n      if (category === 'general') category = 'competitor_news';\n    } else if (urlLower.includes('walkme.com')) {\n      company = company || 'WalkMe';\n      if (category === 'general') category = 'competitor_news';\n    } else if (urlLower.includes('pendo.io')) {\n      company = company || 'Pendo';\n      if (category === 'general') category = 'competitor_news';\n    }\n    \n    // Platform-specific enhancements\n    if (urlLower.includes('g2.com')) {\n      platform = platform || 'G2';\n      category = 'reviews';\n      confidence = 'high';\n    } else if (urlLower.includes('gartner.com')) {\n      platform = platform || 'Gartner';\n      if (urlLower.includes('reviews')) {\n        category = 'reviews';\n      } else {\n        category = 'industry_reports';\n      }\n      confidence = 'high';\n    } else if (urlLower.includes('forrester.com')) {\n      platform = 'Forrester';\n      category = 'industry_reports';\n      confidence = 'high';\n    } else if (urlLower.includes('techcrunch.com')) {\n      platform = 'TechCrunch';\n      category = 'industry_reports';\n      confidence = 'high';\n    } else if (urlLower.includes('venturebeat.com')) {\n      platform = 'VentureBeat';\n      category = 'industry_reports';\n      confidence = 'high';\n    } else if (urlLower.includes('elearningindustry.com')) {\n      platform = 'eLearning';\n      category = 'industry_reports';\n      confidence = 'high'; \n    }\n    \n    return { category, company, sourceType, platform, confidence };\n  }\n  \n  // Process each item\n  for (const item of items) {\n    const data = item.json || {};\n    \n    // Handle different input formats\nlet url = data.url || '';\nlet rawContent = data.data || data.content || data.body || data.text || '';\nlet links = [];\nlet originalMetadata = {};\n\n// If not found, try to extract from nested 'result'\nif (!rawContent && data.result) {\n  if (typeof data.result === 'string') {\n    rawContent = data.result;\n  } else {\n    const extraction = extractStringsAndLinks(data.result);\n    rawContent = extraction.texts.length ? extraction.texts[0] : '';\n    links = extraction.links;\n  }\n} else if (data.result && typeof data.result === 'string') {\n  // If result is a string, use it directly\n  rawContent = data.result;\n}\n    \n    // Extract original metadata from the merged data\n    if (data.company) originalMetadata.company = data.company;\n    if (data.type) originalMetadata.type = data.type;\n    if (data.platform) originalMetadata.platform = data.platform;\n    if (data.source) originalMetadata.source = data.source;\n    \n    // Handle Perplexity responses (if they come through)\n    if (data.message && typeof data.message === 'string') {\n      // This looks like Perplexity output\n      url = 'perplexity-search-result';\n      rawContent = data.message;\n      originalMetadata = { type: 'market_research', source: 'Perplexity' };\n    }\n    \n    // 🔧 IMPROVED: Better handling of review data if it exists\n    if (data.result && data.result.extracted_info && data.result.extracted_info.reviews) {\n      rawContent = rawContent || data.result.extracted_info.reviews;\n    }\n    \n    // Skip items with no meaningful content\n    if (!url || !rawContent || rawContent.length < 50) {\n      console.log('Skipping item with insufficient content:', { url: url.substring(0, 50), contentLength: rawContent?.length || 0 });\n      continue;\n    }\n    \n    // Deduplication check\n    const key = url.toLowerCase().trim();\n    if (seen.has(key)) {\n      console.log('Skipping duplicate URL:', url);\n      continue;\n    }\n    seen.add(key);\n    \n    // Clean and process content\n    const cleanContent = cleanHtmlContent(rawContent);\n    \n    // Skip if cleaning resulted in too little content\n    if (cleanContent.length < 100) {\n      console.log('Skipping item with insufficient clean content:', { url: url.substring(0, 50), cleanLength: cleanContent.length });\n      continue;\n    }\n    \n    const title = extractTitle(cleanContent, url, originalMetadata);\n    const classification = categorizeContent(url, cleanContent, originalMetadata);\n    \n    processedData.push({\n      url: url,\n      title: title,\n      content: cleanContent,\n      word_count: cleanContent.split(' ').length,\n      char_count: cleanContent.length,\n      ...classification,\n      original_metadata: originalMetadata,\n      processed_at: new Date().toISOString(),\n      content_quality: cleanContent.length > 1000 ? 'high' : cleanContent.length > 500 ? 'medium' : 'basic'\n    });\n  }\n  \n  // Sort by category and quality for optimal AI processing\n  processedData.sort((a, b) => {\n    // Primary sort: category priority\n    const categoryOrder = ['competitor_news', 'market_research', 'reviews', 'industry_reports', 'market_news', 'general'];\n    const catDiff = categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);\n    if (catDiff !== 0) return catDiff;\n    \n    // Secondary sort: confidence level\n    const confOrder = ['high', 'medium', 'low'];\n    const confDiff = confOrder.indexOf(a.confidence) - confOrder.indexOf(b.confidence);\n    if (confDiff !== 0) return confDiff;\n    \n    // Tertiary sort: content quality\n    return b.word_count - a.word_count;\n  });\n  \n  // Summary logging\n  const categoryCounts = processedData.reduce((acc, item) => {\n    acc[item.category] = (acc[item.category] || 0) + 1;\n    return acc;\n  }, {});\n  \n  console.log(`✅ Successfully processed ${processedData.length} unique items from ${items.length} total inputs`);\n  console.log(`📊 Category distribution:`, categoryCounts);\n  console.log(`🏢 Companies found:`, [...new Set(processedData.map(d => d.company).filter(Boolean))]);\n  console.log(`📈 Average content length:`, Math.round(processedData.reduce((sum, item) => sum + item.word_count, 0) / processedData.length));\n  \n  return processedData.map(item => ({ json: item }));\n  \n} catch (error) {\n  console.error('❌ Data processing error:', error.message);\n  console.error('Error stack:', error.stack);\n  \n  // Return error info with original data preserved\n  return items.map((item, index) => ({\n    json: {\n      ...item.json,\n      _processing_error: {\n        message: error.message,\n        node: 'Data Processing & Deduplication',\n        item_index: index,\n        timestamp: new Date().toISOString(),\n        suggestion: 'Check input data format and content structure',\n        original_keys: Object.keys(item.json || {})\n      },\n      processed_at: new Date().toISOString(),\n      status: 'processing_failed'\n    }\n  }));\n}"
+      },
+      "id": "a65c8204-8d43-4a9c-9401-087d2232f9e2",
+      "name": "08. Code - Aggregate & Deduplicate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        80
+      ],
+      "tags": [
+        "stage:5",
+        "type:code",
+        "owner:agent",
+        "env:prod"
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "driveId": "=myDrive",
+        "folderId": "=",
+        "title": "DAP Market Research Report - {{ $now.toFormat('yyyy-MM-dd') }}"
+      },
+      "id": "165632fa-5683-426e-a2b4-dd730407864c",
+      "name": "13. Google Docs - Create Report",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4128,
+        0
+      ],
+      "tags": [
+        "stage:8",
+        "type:io",
+        "owner:agent",
+        "env:prod"
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "Vmp3GcQPGnJxk8s2",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "competitor_urls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -448
+      ],
+      "id": "9057a49b-8613-44fa-b33d-3559224c086f",
+      "name": "Split each URL from array"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=#Role:\nYopu are a DAP AMrket Researcher and your job is to make periodic research on the changes in the DAP market. \n\n#Task:\nProvide a comprehensive market intelligence analysis of the Digital Adoption Platform (DAP) industry **covering {{ $('02. Set Variables - Config').item.json.date_start }} to {{ $('02. Set Variables - Config').item.json.date_end }}**. Competitors: \n\n##**Include: current market size with specific revenue figures and CAGR projections, detailed growth drivers and market trajectory analysis, recent investment activity and funding rounds, emerging market segments and niches, new competitor analysis, industry expert insights from analysts like Forrester and Gartner, and strategic market opportunities**. \n##Focus on quantitative data, recent developments, and forward-looking market intelligence.\n##Key words you might use:\n- DAP (digital adoption platforms) market size \n- DAP growth rates, \n- DAP CAGR, \n- DAP industry trends\n- DAP related investment funding\n- emerging digital adoption platforms that could be Userlane's competitors\n- emerging new market/niches in DAP landscape\n- DAP market trajectory\n- Real users feedback on digital adoption platform (Walkme, WhatFix, Apty, Pendo)\n\n"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        208,
+        912
+      ],
+      "id": "89c92a93-7dea-4b44-9c9d-9dc5aaacbf83",
+      "name": "Message a model",
+      "credentials": {
+        "perplexityApi": {
+          "id": "6LoVi24CY8Kcaii9",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        752,
+        -432
+      ],
+      "id": "b1e353ee-2971-48cb-9e92-0b41a809a39a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 25000
+        }
+      },
+      "id": "57c509d5-d64e-40ec-b765-73184acaead0",
+      "name": "HTTP Request - Fetch Reviews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        208
+      ],
+      "tags": [
+        "stage:4",
+        "type:io",
+        "owner:agent",
+        "env:prod"
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "b5c6ff8b-77e2-4574-b474-69b7ae2079ac",
+      "name": "HTTP Request - Fetch Competitor News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        -320
+      ],
+      "tags": [
+        "stage:4",
+        "type:io",
+        "owner:agent",
+        "env:prod"
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "review_urls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -16
+      ],
+      "id": "4842a183-335e-435a-a562-828bb5c3e183",
+      "name": "Split each URL from array1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "6612f518-1559-4c91-a203-0c5f867a0b73",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "industry_urls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        432
+      ],
+      "id": "ac7749b9-ae12-4d46-9142-217ae73156f4",
+      "name": "Split each URL from array2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        448
+      ],
+      "id": "bc4ea02b-a9ff-4771-98da-74e236551bb6",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 35000
+        }
+      },
+      "id": "41edeeac-354b-45b2-8705-c4bb5fe366a7",
+      "name": "HTTP Request - Fetch Industry Reports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        672
+      ],
+      "tags": [
+        "stage:4",
+        "type:io",
+        "owner:agent",
+        "env:prod"
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "competitor_news",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8d7aecf1-8f84-4d51-8488-4bfe9b9ae0eb"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad691767-4955-4f7b-be97-09ab8cebff24",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "industry_reports",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8feea0f4-6cb3-4107-b089-4d7e155b1690",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "reviews",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1808,
+        64
+      ],
+      "id": "b061ff47-d7af-4564-91a6-7d6575b3b8be",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Please analyse the input from the previous node - this is about the competitors news. Follow the System Message below to analyse and compose the good output",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=#Role:\nYou are a Competitors News Agent created to analyse the raw data received from HTTP requests about the competitors recent product updates.\n\n#Task:\nAnalyze **Userlane's** competitor news, press releases, and announcements on the weekly basis. **The list of competitors**: {{ $('02. Set Variables - Config').first().json.accepted_competitors }}. You should read through the raw html data and extract the important details related to them (competitors) posting recent product updates, announcing some product updates, posting global company news or the recent reviews & reports.\n\n#Context:\nYou receive cleaned html markdowm from: {{ $json.content }} categorized as {{ $json.category }} from HTTP requests. The original metadata for the reference: {{ $json.original_metadata }} . The trigger is set to run once per week and check the newsroom pages per the competitors. Since each week the same HTTP requests are called it returns both recent and outdated information mixed together. Your job is to be **CONTEXTUALLY INTELLIGENT** - analyze the temporal context and extract only genuinely recent, relevant developments that doesn't duplicate the info received the week ago.\n\n#Tools:\nUse the **Competitors_News_Storing** vector DB to put the extracted info each time you run the research and always verify if the same (contextually) info is already in there. If it is - you should simply ignore it. When you prepare your summary after running research, use **Structured_Output_Parser** tool to structure the summary in the JSOn format described in it.\n\n#Critical Temporal Intelligence Requirements:\n- **IGNORE OUTDATED CONTENT**: If content mentions dates from 2020-2023 or early 2024, recognize it as outdated and exclude it\n- **FOCUS ON RECENCY**: Only analyze developments that are clearly recent - last 3 months from {{ $('02. Set Variables - Config').first().json.date_end }} on first run and the last 7 days from {{ $('02. Set Variables - Config').first().json.date_end }} on all subsequent runs. Basically starting from the second run and on you should only look at the latest updates in this timerange: {{ $('02. Set Variables - Config').first().json.date_start }} to {{ $('02. Set Variables - Config').first().json.date_end }}\n- ##Context Analysis: Look for temporal clues like \"recently launched\", \"new partnership\", \"latest update\" vs \"back in 2023\", \"last year's results\" \"2024\", \"2023\"\n- ##Smart Filtering: Don't just summarize everything - be selective about what constitutes genuinely current intelligence\n- ##Date Awareness: When content mentions specific dates, evaluate if they're relevant to current market intelligence\n\n#Rules & Guardrails\n- Do not fabricate information not present in the source content\n- When in doubt about recency, mark confidence as \"low\" rather than including potentially stale info\n- Always include source URLs in citations\n- **the research depth should be: {{ $('02. Set Variables - Config').first().json.research_depth_subsequent }}**\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        -496
+      ],
+      "id": "3d79a18e-95f9-4607-8b06-5307799b8f64",
+      "name": "Competitor News Agent",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2240,
+        -304
+      ],
+      "id": "4efe20af-3c99-4ff9-a367-d71b0cc26b94",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EDEY6ScXLPcymApJ",
+          "name": "Anthropic account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2352,
+        -144
+      ],
+      "id": "599dd636-1687-461f-8eab-ba7453d20744",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "F3Y6z3m93X8IObrT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Please analyse the input from the previous node - this is about the competitors news. Follow the System Message below to analyse and compose the good output",
+        "options": {
+          "systemMessage": "=#Role:\nYou are a Master Report Compiler and your job is to analyse and generate a final report based on the data you get from all the agents that did their jobs.\n\n#Task:\n**Synthesize analysis from four specialist agents** into a comprehensive, executive-ready weekly market research report focused on current, actionable intelligence for Digital Adoption Platform strategy.\n\n#Context:\nYou receive structured JSON outputs from analysis agents covering: \n##**Recent competitor developments:**\n{{ $('02. Set Variables - Config').first().json.accepted_competitors }}  , \n- Current market trends, industry insights from: {{ $json['recommendations.for_userlane'] }}, {{ $json['recommendations.monitoring_priorities'] }}, {{ $json['competitor_analysis.key_developments'][1].developments }}, {{ $json['key_insights.recent_developments'] }}, {{ $json['key_insights.recent_developments'][0].summary }}\n- Recent customer sentiment and review patterns. Your output is the final strategic deliverable for product management and executive decision-making:\n- Competitors news from: {{ $json['competitor_intelligence_summary.competitor_name'] }} , {{ $json['competitor_intelligence_summary.key_findings.market_positioning'] }}, {{ $json['competitor_intelligence_summary.key_findings.competitive_stance'] }}, {{ $json['competitor_intelligence_summary.key_findings.product_evolution'] }}, {{ $json['competitor_intelligence_summary.key_findings.target_segments'] }}, {{ $json['competitor_intelligence_summary.key_findings.target_segments'] }},\n{{ $json['competitive_intelligence.market_trends_identified'] }}, {{ $json['competitor_analysis.key_developments'][0].developments[1].description$json['competitor_analysis.key_developments'][0].developments[0].description }}, {{ $json['competitor_analysis.key_developments'][0].developments[2].description }}, {{ $json['competitor_analysis.key_developments'][2] }}, {{ $json['competitor_analysis.competitive_intelligence.ai_focus'] }}\n\n#Critical Intelligence Requirements:\n##**SYNTHESIS OVER CONCATENATION**: \nDon't just combine outputs - analyze patterns, connections, and strategic implications across all data sources\n##**TEMPORAL FOCUS**: \nEmphasize recent developments and current market conditions. For the first run the timespan is: the last 3 months from {{ $('02. Set Variables - Config').first().json.date_end }} . For all subsequent runs after that: {{ $('02. Set Variables - Config').first().json.date_start }} to {{ $('02. Set Variables - Config').first().json.date_end }}\n##**STRATEGIC PERSPECTIVE**: \nTransform raw intelligence into actionable business insights\n##**CROSS-REFERENCE**: \nIdentify correlations between competitor moves, market trends, and customer sentiment\n##**CURRENT RELEVANCE**: Ensure all insights reflect the present market state, not historical context\n\n#Report Structure Requirements:\nGenerate a structured report adjusted for Google Doc with these exact sections:\n\n##**Executive Summary** (3-4 key strategic insights, max 300 words)\n##**Recent DAP market news**\n##**Competitors Spotlights** (Recent changes and developments by company, fundings, acquisitions, strategic shifts)\n##**Competitors Updates** (Product updates, partnerships, release notes, press-releases)\n##**Overall Market Data** (Current trends, trajectories, strategic insights for product roadmap)\n##**Competitors Health Assessment** (Available metrics on performance, growth, market position)\n#**Recent Industry Reports & Analysis** (Analyst insights, market research findings)\n##**Market Dynamics** (Market size, growth rates, financial trends, emerging segments)\n##**Strategic Insights for Product Strategy** (Opportunities and threats analysis)\n##**Emerging Markets & Niches** (New segments, untapped opportunities, market potential)\n#**Sources & Citations** (Complete reference list with URLs)\n\n#Output Format:\nReturn structured markdown report:\n\n##Executive Summary\n[3-4 strategic insights with business implications, max 300 words]\n\n##Competitors Spotlights\n### WalkMe\n[Recent developments, product releases, news, press releases, strategic significance]\n### WhatFix  \n[Recent developments, product releases, news, press releases, strategic significance]\n### Pendo\n[Recent developments, product releases, news, press releases, strategic significance]\n### Apty\n[Recent developments, product releases, news, press releases, strategic significance]\n\n##Overall Market Data\n### Key Market Trends\n[Current trends affecting DAP market]\n###Strategic Implications\n[What these trends mean for product strategy and roadmap]\n###Market Trajectory Analysis\n[Direction and momentum of market evolution]\n\n##Competitors Health Assessment\n###Performance Indicators\n[Available metrics on competitor performance: revenue, valuation, number of customers, user base growth rate, churn rate]. Represent in the table view where each parameter is a column and each competitor is a row\n###Market Share Dynamics\n[Changes in competitive positioning]\n\n##Recent Industry Reports & Analysis\n###Analyst Insights\n[Key findings from Forrester, Gartner, etc.]\n###Market Research Findings\n[Third-party research and data]\n###Industry Expert Perspectives\n[Notable industry commentary and predictions]\n\n##Market Dynamics\n### Market Size & Growth\n[Current market metrics and projections]\n###Financial Trends\n[Investment activity, valuations, market cap changes]\n###Segment Evolution\n[How market segments are developing]\n\n##Strategic Insights for Product Strategy\n###Immediate Opportunities (Next 30-90 days)\n[Specific actionable opportunities]\n###Medium-term Considerations (3-6 months)\n[Strategic planning recommendations]\n###Competitive Threats\n[Emerging threats requiring attention]\n###Product Roadmap Implications\n[How market intelligence should influence product decisions]\n\n##Emerging Markets & Niches\n### New Market Segments\n[Emerging DAP players and use cases]\n###Untapped Opportunities\n[Market gaps and whitespace opportunities]\n###Market Potential Assessment\n[Size and opportunity evaluation for new segments]\n\n##Sources & Citations\n[Complete alphabetical list of all source URLs from input analyses]\n\n#Tools:\nAlways check **Report_Storing** vector database before generating final report for existing data from previous reports and skip. Try to match info/facts to the records in the DB and if you find this match then ignore it and do not include into the new report nor save it into DB yo avoid duplications.\nAlso, whenever you need any additional missing details you should call **SerpAPI**\ntool if you need simple key words research or calling a particular endpoint. If you need to make more in-depth research on missing details use **Additional Research** tool to send prepared key words and get the comprehensive research output "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3680,
+        0
+      ],
+      "id": "3211cf5a-ea60-4ca7-9dc7-e254e906fa71",
+      "name": "Generate Report",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Please analyse the input from the previous node - this is about the competitors news. Follow the System Message below to analyse and compose the good output",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=#Role:\nYou are a Industry Report Agent created to analyse the raw data received from HTTP requests regarding the DAP (digital adoption platforms) market reports from known resources\n\n#Task:\nAnalyze industry reports, market research docs, and analyst content to identify **CURRENT DAP** **market trends**, **recent growth data**, **latest investment activity**, and **emerging opportunities** based on the articles we extract via HTTP request node.\n\n#Context\nYou receive content from {{ $json.content }} . This content often contains mix of recent articles/reports and historical data. You must be CONTEXTUALLY INTELLIGENT and focus only on current, actionable market intelligence.\n\n#Tool:\nAlways use **Industry_Report_Storing** vector DB to check if the info analysed already exists in the DB **(based on context, so distinguish between current articles/reports and historical performance (2020-2024))**\nAlso alwayts use **Structured Output Parser** to create structured output in json format (the format is described in the node)\n\n##Timespan: \nFocus on articles/reports that are active now, not retrospective analysis of past years. For the first run span the timeframe 3 months from {{ $now }} . In all subsequent runs after that span this timeframe: {{ $('02. Set Variables - Config').first().json.date_start }} to {{ $('02. Set Variables - Config').first().json.date_end }}. Also the key words could help to recognise obsolete articles **(Look for \"current\", \"latest\", \"recent\", \"Q3-2025\", \"this year\" vs \"in 2023\", \"historically\", \"past performance\")**\n\n\n#Rules & Guardrails:  \n- Focus on Digital Adoption Platform market specifically\n- Be INTELLIGENT about temporal relevance - exclude clearly outdated insights\n- Prioritize current quantitative data over historical trends\n- Distinguish between validated recent insights and old speculative content\n- Flag when information timing is unclear\n- Extract only recent investment/funding news\n\n#Self-Verification:\n- Did I filter out clearly historical data (2020-2024)?\n- Are market metrics and trends genuinely current?\n- Did I evaluate temporal context, not just extract data?\n- Are investment activities recent and relevant?"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        112
+      ],
+      "id": "607c9a5f-469d-404b-b25d-316b3bf766da",
+      "name": "Industry Report Agent",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2176,
+        208
+      ],
+      "id": "6eb3e05b-131f-4eb3-9c2b-51a7fdfef6a0",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EDEY6ScXLPcymApJ",
+          "name": "Anthropic account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2320,
+        496
+      ],
+      "id": "dd3d7d75-0fb7-4d87-8d75-04450f1e6027",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "F3Y6z3m93X8IObrT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2224,
+        944
+      ],
+      "id": "be0172f4-de6c-4e6c-a5de-380e2b1bf858",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EDEY6ScXLPcymApJ",
+          "name": "Anthropic account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2352,
+        1104
+      ],
+      "id": "5a03c5cf-2836-4ad8-b991-87e7e3268e04",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "F3Y6z3m93X8IObrT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Please analyse the input from the previous node - this is about the competitors news. Follow the System Message below to analyse and compose the good output",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=#Role:\nYou are a User Reviews Agent created to analyse the raw data received from HTTP requests regarding the real users reviews on the competitors products.\n\n#Tools:\nYou should always use **User_Reviews_Storing** vector DB to check whether the same feedback is alrady in there and ignore if it is. Also when you finidh the research each time use **Structured Output Parser2** to compile the outcomes in json format described in the tool\n\n#Task:\nAnalyze RECENT customer reviews and ratings from {{ $('Merge1').item.json.result.extracted_info.reviews }} to identify current satisfaction patterns, recent feature feedback, and up-to-date competitive positioning across {{ $('02. Set Variables - Config').first().json.accepted_competitors }}.\n\n#Context:\n**Real users often leave the feedback on the DAP platform usage** and share pros and cons. We want to be aware of this because it gives us the understanding on what users value and what they don't like to avoid the same mistakes and multiply on the true value. You receive review content from G2 and Gartner platforms. Review platforms often show both recent and older reviews mixed together. You must be CONTEXTUALLY INTELLIGENT and focus on recent feedback patterns, not historical sentiment. Also you **must only provide real user feedback, written by human being, not some industry reports, industry experts opinion, reviews, summary or any other kind of summaries**.\n\n#Critical Temporal Intelligence Requirements:\n- ##**REVIEW RECENCY**: Focus on recent review patterns, not historical feedback from 2020-2024. For the first run span the timeframe: last 3 months from {{ $('02. Set Variables - Config').first().json.date_end }} for the first run and the next runs: {{ $('02. Set Variables - Config').first().json.date_start }} to {{ $('02. Set Variables - Config').first().json.date_end }}\n- ##**SENTIMENT TIMING**: Identify if sentiment patterns are current or based on older product versions\n- ##**Feature RELEVANCE**: Prioritize feedback about current product capabilities, not outdated features\n\n#Rules & Guardrails: \n- Be INTELLIGENT about review timing and relevance\n- Extract current sentiment patterns, not historical user experiences\n- Focus on recent feature feedback over legacy product issues\n- Identify recurring themes in RECENT reviews\n- Do not include personally identifying information\n\n\n#Self-Verification:\n- Did I focus on recent review patterns rather than historical sentiment?\n- Are feature assessments based on current product capabilities?\n- Did I analyze temporal context of user feedback?\n- Are competitive insights based on up-to-date user experiences?"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        736
+      ],
+      "id": "bc1274bb-b6f0-4a7f-a9ed-86f2470845b0",
+      "name": "User Reviews Agent",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3600,
+        208
+      ],
+      "id": "7b2fd594-e032-4a04-9326-c5e4d4a79360",
+      "name": "Anthropic Chat Model3",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EDEY6ScXLPcymApJ",
+          "name": "Anthropic account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3696,
+        368
+      ],
+      "id": "106f4207-f415-4847-90ad-2334c428224e",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "F3Y6z3m93X8IObrT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3040,
+        -32
+      ],
+      "id": "e12256de-1b85-417e-8bbd-1f3c42a56ec0",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"market_insights\": [\n    {\n      \"insight_type\": \"market_size|growth_trend|investment|regulatory|technology_trend\",\n      \"headline\": \"string (max 120 chars)\",\n      \"summary\": \"string (max 250 words)\",\n      \"data_points\": [\"string\"],\n      \"time_horizon\": \"current|6_months|1_year|future_projection\",\n      \"recency_confidence\": \"high|medium|low\",\n      \"confidence_level\": \"high|medium|low\",\n      \"source_url\": \"string\"\n    }\n  ],\n  \"content_analysis\": {\n    \"total_content_reviewed\": \"number\",\n    \"current_insights_extracted\": \"number\",\n    \"outdated_content_filtered\": \"number\"\n  },\n  \"market_metrics\": {\n    \"current_market_size\": \"string or null\",\n    \"latest_growth_rate\": \"string or null\", \n    \"recent_growth_drivers\": [\"string\"]\n  },\n  \"recent_investment_activity\": [\n    {\n      \"activity_type\": \"funding|acquisition|ipo|partnership\",\n      \"description\": \"string (max 150 words)\",\n      \"timeframe\": \"string\",\n      \"amount\": \"string or null\",\n      \"companies_involved\": [\"string\"]\n    }\n  ],\n  \"emerging_opportunities\": [\"string\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        320
+      ],
+      "id": "6b5f4320-37e8-48cb-bf97-4fd83cf82723",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"competitor_sentiment\": [\n    {\n      \"company\": \"string\",\n      \"platform\": \"G2|Gartner\", \n      \"current_sentiment_trend\": \"positive|negative|mixed|stable\",\n      \"recent_feedback_quality\": \"high|medium|low\",\n      \"top_recent_strengths\": [\n        {\n          \"strength\": \"string (max 50 chars)\",\n          \"frequency\": \"high|medium|low\",\n          \"recency_indicator\": \"very_recent|recent|unclear\",\n          \"sample_feedback\": \"string (max 100 chars)\"\n        }\n      ],\n      \"top_recent_weaknesses\": [\n        {\n          \"weakness\": \"string (max 50 chars)\", \n          \"frequency\": \"high|medium|low\",\n          \"recency_indicator\": \"very_recent|recent|unclear\",\n          \"sample_feedback\": \"string (max 100 chars)\"\n        }\n      ],\n      \"rating_trend_analysis\": \"improving|declining|stable|insufficient_recent_data\"\n    }\n  ],\n  \"review_analysis\": {\n    \"total_review_content_processed\": \"number\",\n    \"recent_patterns_identified\": \"number\",\n    \"outdated_feedback_filtered\": \"number\"\n  },\n  \"current_competitive_insights\": [\n    {\n      \"insight\": \"string (max 150 chars)\",\n      \"companies_mentioned\": [\"string\"],\n      \"impact\": \"competitive_advantage|market_gap|user_need\",\n      \"currency\": \"current|recent|unclear\"\n    }\n  ],\n  \"current_feature_satisfaction\": {\n    \"recently_praised_features\": [\"string\"],\n    \"recently_criticized_features\": [\"string\"], \n    \"emerging_user_needs\": [\"string\"]\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2640,
+        928
+      ],
+      "id": "0367c28f-7250-4ccb-af53-c57e2d7fafe6",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Description",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-db",
+          "mode": "list",
+          "cachedResultName": "n8n-rag-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2368,
+        -304
+      ],
+      "id": "d8c98683-4408-4d2f-be0b-c1da66831131",
+      "name": "Competitors_News_Storing",
+      "credentials": {
+        "pineconeApi": {
+          "id": "nOt7o8faronNfRQ7",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"competitor_updates\": [\n    {\n      \"company\": \"string\",\n      \"update_type\": \"product_launch|feature_update|partnership|funding|acquisition|strategic_shift\",\n      \"headline\": \"string (max 100 chars)\",\n      \"summary\": \"string (max 200 words)\",\n      \"recency_assessment\": \"very_recent|recent|unclear_timing\",\n      \"business_impact\": \"high|medium|low\", \n      \"competitive_significance\": \"string (max 100 words)\",\n      \"source_url\": \"string\"\n    }\n  ],\n  \"content_analysis\": {\n    \"total_items_reviewed\": \"number\",\n    \"recent_items_found\": \"number\", \n    \"outdated_items_ignored\": \"number\"\n  },\n  \"key_competitive_themes\": [\"string\"],\n  \"market_positioning_changes\": {\n    \"company_name\": \"positioning change summary\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2640,
+        -240
+      ],
+      "id": "1198b516-5220-4a3a-8856-6b427321b316",
+      "name": "Structured_Output_Parser"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Description",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-db",
+          "mode": "list",
+          "cachedResultName": "n8n-rag-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2320,
+        320
+      ],
+      "id": "1b0d491d-d73c-4094-94d1-d86bdfcf5b35",
+      "name": "Industry_Report_Storing",
+      "credentials": {
+        "pineconeApi": {
+          "id": "nOt7o8faronNfRQ7",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Description",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-db",
+          "mode": "list",
+          "cachedResultName": "n8n-rag-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2368,
+        944
+      ],
+      "id": "4ce745e0-b1c4-40ed-b53b-0948ecf1aa94",
+      "name": "User_Reviews_Storing",
+      "credentials": {
+        "pineconeApi": {
+          "id": "nOt7o8faronNfRQ7",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "description",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-db",
+          "mode": "list",
+          "cachedResultName": "n8n-rag-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        3712,
+        208
+      ],
+      "id": "6b621783-80c1-4bf1-9137-e62a8f8e5880",
+      "name": "Report_Storing",
+      "credentials": {
+        "pineconeApi": {
+          "id": "nOt7o8faronNfRQ7",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Helper function to recursively flatten an object\nfunction flatten(obj, prefix = '', res = {}) {\n  for (const key in obj) {\n    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;\n    const value = obj[key];\n    const newKey = prefix ? `${prefix}.${key}` : key;\n    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {\n      flatten(value, newKey, res);\n    } else {\n      res[newKey] = value;\n    }\n  }\n  return res;\n}\n\n// Main code: flatten the .output field for each item\nreturn items.map(item => {\n  const output = item.json.output || {};\n  return {\n    json: flatten(output)\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        0
+      ],
+      "id": "93c910b0-6b1f-49ee-a8b9-a1185d56226e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## Set Up \n**These steps sets up the cron job to schedule the research run each Monday. Also it sets necessary variables as well as the URL's of the resources where AI Agent could find the data**",
+        "height": 1888,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1232,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "7827ce54-1152-4290-94a0-43525afc723c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Resources Calling \n**Here  AI Agent calls the endpoints I provided as well as do parallel free search via Perplexity API by queries/ key words**",
+        "height": 1888,
+        "width": 1504,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "54ecfe6d-7537-4dfd-8f2f-23342dfab4c1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Normalize \n**These steps intended to merge and turn the raw data into better readable data by AI Agent nodes (each AI Agent node process the data by theme)**",
+        "height": 1888,
+        "width": 832,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "453a6f49-8f64-4fd8-880d-82e354c5866a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Data Extraction \n**AI Agents nodes reads through the raw data and extract important insights for the future report**",
+        "height": 1888,
+        "width": 864
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2032,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "b125da7f-125e-46d6-b7a7-11f0bdf27af0",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Data Preparation \n**Final processing and merging of the extracted insights**",
+        "height": 1888,
+        "width": 640,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2896,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "055591d2-23eb-474e-a55d-0306dcd420d0",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Report Generation \n**This is Master AI Agent node where it process insights received from previous nodes and compille it into final report to send it to Google Docs**",
+        "height": 1888,
+        "width": 816,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3536,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "04c3e85b-5153-407f-8674-18b460304cdd",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "01. Trigger - Weekly Monday 9AM": {
+      "main": [
+        [
+          {
+            "node": "02. Set Variables - Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02. Set Variables - Config": {
+      "main": [
+        [
+          {
+            "node": "03. Set URLs - Data Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03. Set URLs - Data Sources": {
+      "main": [
+        [
+          {
+            "node": "Split each URL from array",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split each URL from array1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split each URL from array2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split each URL from array": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Fetch Competitor News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Fetch Reviews": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Fetch Competitor News": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split each URL from array1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request - Fetch Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split each URL from array2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request - Fetch Industry Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Fetch Industry Reports": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "08. Code - Aggregate & Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "08. Code - Aggregate & Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "08. Code - Aggregate & Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08. Code - Aggregate & Deduplicate": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Competitor News Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Industry Report Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "User Reviews Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Competitor News Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Competitors_News_Storing",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Competitor News Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Industry Report Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Industry_Report_Storing",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "User Reviews Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "User_Reviews_Storing",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Report_Storing",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Industry Report Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "User Reviews Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Industry Report Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "User Reviews Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report": {
+      "main": [
+        [
+          {
+            "node": "13. Google Docs - Create Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Competitors_News_Storing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Competitor News Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured_Output_Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Competitor News Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Industry_Report_Storing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Industry Report Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User_Reviews_Storing": {
+      "ai_tool": [
+        [
+          {
+            "node": "User Reviews Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report_Storing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d03d8ebe-696c-48f7-984e-003057aa63da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d1df255740e523349071c39442cef101dbc9d2989bffa0642d0cdd95424fd1c7"
+  },
+  "id": "8vgBwC3dotID9m0q",
+  "tags": []
+}
